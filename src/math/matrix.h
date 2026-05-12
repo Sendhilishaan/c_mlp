@@ -19,4 +19,14 @@ void mat_print(Matrix* M);
 
 Matrix* mat_mul(Matrix* A, Matrix* B);
 
+Matrix* mat_add(Matrix* A, Matrix* B);
+
+Matrix* mat_sub(Matrix* A, Matrix* B);
+
+Matrix* mat_transpose(Matrix* A);
+
+Matrix* mat_hadamard(Matrix* A, Matrix* B);
+
+Matrix* mat_smul(double c, Matrix* A);
+
 #endif

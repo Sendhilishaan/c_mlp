@@ -54,3 +54,68 @@ Matrix* mat_mul(Matrix* A, Matrix* B) {
 
     return result;
 }
+
+Matrix* mat_add(Matrix* A, Matrix* B) {
+    if (A->cols != B->cols || A->rows != B->rows) {
+        printf("incorrect dimensions");
+        return NULL;
+    }
+
+    Matrix* result = mat_create(A->rows, B->cols);
+
+    for (size_t i = 0; i < A->cols * A->rows; i++) {
+        result->data[i] = A->data[i] + B->data[i];
+    }
+    
+    return result;
+}
+
+Matrix* mat_sub(Matrix* A, Matrix* B) {
+    if (A->cols != B->cols || A->rows != B->rows) {
+        printf("incorrect dimensions");
+        return NULL;
+    }
+
+    Matrix* result = mat_create(A->rows, B->cols);
+
+    for (size_t i = 0; i < A->cols * A->rows; i++) {
+        result->data[i] = A->data[i] - B->data[i];
+    }
+    
+    return result;
+}
+
+Matrix* mat_hadamard(Matrix* A, Matrix* B) {
+    if (A->cols != B->cols || A->rows != B->rows) {
+        printf("incorrect dimensions");
+        return NULL;
+    }
+
+    Matrix* result = mat_create(A->rows, B->cols);
+
+    for (size_t i = 0; i < A->cols * A->rows; i++) {
+        result->data[i] = A->data[i] * B->data[i];
+    }
+    
+    return result;
+}
+
+Matrix* mat_transpose(Matrix* A) {
+    Matrix* result = mat_create(A->cols, A->rows);
+
+    for (size_t i = 0; i < A->rows; i++) {
+        for (size_t j = 0; j < A->cols; j++) {
+            AT(result, j, i) = AT(A, i, j);
+        }
+    }
+    return result;
+}
+
+Matrix* mat_smul(double c, Matrix* A) {
+    Matrix* result = mat_create(A->rows, A->cols);
+
+    for (size_t i = 0; i < A->cols * A->rows; i++) {
+        result->data[i] = A->data[i] * c;
+    }
+    return result;
+}
