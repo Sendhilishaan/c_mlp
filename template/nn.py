@@ -98,7 +98,7 @@ if __name__ == "__main__":
 
     layers = [(Linear(1, 16), Activation.relu, Activation.drelu), (Linear(16, 8), Activation.relu, Activation.drelu), (Linear(8, 1), None, None)]
     mlp = MLP(layers)
-    sgd = SGD([layers[0][0], layers[1][0], layers[1][0]], 0.01)
+    sgd = SGD([layers[0][0], layers[1][0], layers[2][0]], 0.005)
 
     y_pred = mlp.forward(X)
 
@@ -108,7 +108,7 @@ if __name__ == "__main__":
     pred_line, = ax.plot(X, y_pred, label='predicted')
     ax.legend()
 
-    for i in range(5000):
+    for i in range(10000):
         y_pred = mlp.forward(X)
         loss = Loss.mse(y_pred, y)
         print(loss)
@@ -116,7 +116,6 @@ if __name__ == "__main__":
         grad = Loss.dmse(y_pred, y)
         backward = mlp.backward(grad)
 
-        y_pred = mlp.forward(X)
         pred_line.set_ydata(y_pred)
         plt.pause(0.001)
 
