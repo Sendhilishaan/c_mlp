@@ -21,12 +21,14 @@ Matrix* mat_mul(Matrix* A, Matrix* B);
 
 Matrix* mat_add(Matrix* A, Matrix* B);
 
+Matrix* smat_add(Matrix* A, double x);
+
 Matrix* mat_sub(Matrix* A, Matrix* B);
 
 Matrix* mat_transpose(Matrix* A);
 
 Matrix* mat_hadamard(Matrix* A, Matrix* B);
 
-Matrix* mat_smul(double c, Matrix* A);
+Matrix* smat_mul(double c, Matrix* A);
 
 #endif

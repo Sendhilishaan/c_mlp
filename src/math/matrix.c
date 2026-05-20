@@ -70,6 +70,18 @@ Matrix* mat_add(Matrix* A, Matrix* B) {
     return result;
 }
 
+Matrix* smat_add(Matrix* A, double x) {
+    Matrix* result = mat_create(A->rows, A->cols);
+
+    for (size_t i = 0; i < A->rows; i++) {
+        for (size_t j = 0; j < A->cols; j++) {
+            AT(result, i, j) = AT(A, i, j) + x;
+        }
+    }
+
+    return result;
+}
+
 Matrix* mat_sub(Matrix* A, Matrix* B) {
     if (A->cols != B->cols || A->rows != B->rows) {
         printf("incorrect dimensions");
@@ -111,7 +123,7 @@ Matrix* mat_transpose(Matrix* A) {
     return result;
 }
 
-Matrix* mat_smul(double c, Matrix* A) {
+Matrix* smat_mul(double c, Matrix* A) {
     Matrix* result = mat_create(A->rows, A->cols);
 
     for (size_t i = 0; i < A->cols * A->rows; i++) {
