@@ -70,6 +70,25 @@ Matrix* mat_add(Matrix* A, Matrix* B) {
     return result;
 }
 
+Matrix* mat_add_broadcast(Matrix* A, Matrix* B) {
+    // B is a vector, add column value as a scalar to each column in A
+    if (A->cols != B->cols || B->rows != 1) {
+        printf("mat_add_broad incorrect shape");
+        return NULL;
+    }
+
+    Matrix* result = mat_create(A->rows, A->cols);
+
+    for (size_t j = 0; j < A->cols; j++) {
+        for (size_t i = 0; i < A->rows; i++) {
+            AT(result, i, j) = AT(B, 0, j) + AT(A, i, j);
+        }
+    }
+
+    return result;
+
+}
+
 Matrix* smat_add(Matrix* A, double x) {
     Matrix* result = mat_create(A->rows, A->cols);
 
@@ -84,7 +103,7 @@ Matrix* smat_add(Matrix* A, double x) {
 
 Matrix* mat_sub(Matrix* A, Matrix* B) {
     if (A->cols != B->cols || A->rows != B->rows) {
-        printf("incorrect dimensions");
+        printf("mat_sub incorrect dimensions");
         return NULL;
     }
 

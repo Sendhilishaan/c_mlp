@@ -21,6 +21,8 @@ Matrix* mat_mul(Matrix* A, Matrix* B);
 
 Matrix* mat_add(Matrix* A, Matrix* B);
 
+Matrix* mat_add_broadcast(Matrix* A, Matrix* B);
+
 Matrix* smat_add(Matrix* A, double x);
 
 Matrix* mat_sub(Matrix* A, Matrix* B);
