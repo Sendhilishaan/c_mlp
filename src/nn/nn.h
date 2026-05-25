@@ -13,4 +13,8 @@ typedef struct {
 
 Linear* linear_create(size_t in_features, size_t out_features);
 
+Matrix* linear_forward(Linear* layer, Matrix* x);
+
+Matrix* linear_backward(Linear* layer, Matrix* grad_out);
+
 #endif

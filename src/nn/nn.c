@@ -16,7 +16,29 @@ Linear* linear_create(size_t in_features, size_t out_features) {
     }
 
     layer->b = mat_create(1, out_features);
-    layer->x = mat_create(1, out_features);
-    layer->dW = mat_create(1, out_features);
-    layer->db = mat_create(1, out_features);
+    layer->x = NULL;
+    layer->dW = NULL;
+    layer->db = NULL;
+
+    return layer;
+}
+
+Matrix* linear_forward(Linear* layer, Matrix* x) {
+    if (layer->x != NULL) {
+        mat_free(layer->x);
+    }
+
+    // forward pass
+    Matrix* temp = mat_mul(x, layer->W);
+    Matrix* z = mat_add_broadcast(temp, layer->b);
+
+    // cache
+    layer->x = x;
+
+    mat_free(temp);
+    return z;
+}
+
+Matrix* linear_backward(Linear* layer, Matrix* grad_out) {
+
 }
