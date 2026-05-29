@@ -18,7 +18,7 @@ Linear* linear_create(size_t in_features, size_t out_features, Activation* activ
     }
 
     layer->b = mat_create(1, out_features);
-    layer->activation = activation;
+    layer->activation = activation; // NULL if end of net
     layer->x = NULL;
     layer->dW = NULL;
     layer->db = NULL;
@@ -100,4 +100,62 @@ void sgd_step(Linear** layers, int n_layers, double lr) {
 
 // mlp funcs
 
-Matrix* mlp_forward()
+Mlp* mlp_create(Linear** layers, size_t n_layers) {
+    // create mlp with linear layers
+    Mlp* mlp = malloc(sizeof(Mlp));
+    mlp->layers = layers;
+    mlp->n_layers = n_layers;
+    mlp->pre_activations = calloc(n_layers, sizeof(Matrix*));
+
+    return mlp;
+}
+
+Matrix* mlp_forward(Mlp* mlp, Matrix* x) {
+    // reset pre activations before pass
+    if (mlp->pre_activations[0] != NULL) { // use calloc so correct
+        for (int i = 0; i < mlp->n_layers; i++) {
+            mat_free(mlp->pre_activations[i]);
+        }
+    }
+
+    Matrix* x_curr = x;
+    for (int i = 0; i < mlp->n_layers; i++) {
+        Matrix* z = linear_forward(mlp->layers[i], x_curr);
+
+        mlp->pre_activations[i] = z;
+
+        if (x_curr != x) {
+            mat_free(x_curr);
+        }
+
+        if (mlp->layers[i]->activation != NULL) {
+            x_curr = mlp->layers[i]->activation->forward(z);
+        }
+        else {
+            x_curr = z;
+        }
+    }
+
+    return x_curr;
+}
+
+Matrix* mlp_backward(Mlp* mlp, Matrix* grad) {
+    Matrix* grad_cur = grad;
+
+    for (int i = mlp->n_layers - 1; i >= 0; i--) {
+        
+        if (grad_cur != grad) {mat_free(grad_cur);}
+
+        if (mlp->layers[i]->activation != NULL) {
+            Matrix* z = mlp->layers[i]->activation->backward(mlp->pre_activations[i], grad_cur);
+            grad_cur = linear_backward(mlp->layers[i], z);
+            mat_free(z);
+        }
+
+        else {
+            grad_cur = linear_backward(mlp->layers[i], grad_cur);
+        }
+    }
+
+    return grad_cur;
+}
