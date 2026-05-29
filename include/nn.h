@@ -1,8 +1,8 @@
 #ifndef NN_H
 #define NN_H
 
-#include "math/matrix.h"
-#include "math/functions.h"
+#include "matrix.h"
+#include "functions.h"
 
 // linear layer stuff
 
