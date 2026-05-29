@@ -40,5 +40,37 @@ Matrix* linear_forward(Linear* layer, Matrix* x) {
 }
 
 Matrix* linear_backward(Linear* layer, Matrix* grad_out) {
+    if (layer->dW != NULL) {
+        mat_free(layer->dW);
+    }
 
+    Matrix* w_temp = mat_transpose(layer->x);
+    layer->dW = mat_mul(w_temp, grad_out);
+    mat_free(w_temp);
+
+    if (layer->db != NULL) {
+        mat_free(layer->db);
+    }
+
+    Matrix* db = mat_create(1, grad_out->cols);
+    // column-wise sum
+    for (size_t j = 0; j < grad_out->cols; j++) {
+
+        double sum = 0;
+
+        for(size_t i = 0; i < grad_out->rows; i++) {
+            sum += AT(grad_out, i, j);
+        }
+
+        db->data[j] = sum;
+    }
+
+    layer->db = db;
+
+    Matrix* x_temp = mat_transpose(layer->W);
+    Matrix* dx = mat_mul(grad_out, x_temp);
+    mat_free(x_temp);
+
+    return dx;
 }
+
