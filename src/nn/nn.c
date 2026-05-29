@@ -3,7 +3,9 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Linear* linear_create(size_t in_features, size_t out_features) {
+// linear layer
+
+Linear* linear_create(size_t in_features, size_t out_features, Activation* activation) {
     Linear* layer = malloc(sizeof(Linear));
 
     layer->W = mat_create(in_features, out_features);
@@ -16,6 +18,7 @@ Linear* linear_create(size_t in_features, size_t out_features) {
     }
 
     layer->b = mat_create(1, out_features);
+    layer->activation = activation;
     layer->x = NULL;
     layer->dW = NULL;
     layer->db = NULL;
@@ -74,3 +77,27 @@ Matrix* linear_backward(Linear* layer, Matrix* grad_out) {
     return dx;
 }
 
+// sgd step function
+
+void sgd_step(Linear** layers, int n_layers, double lr) {
+    for (int i = 0; i < n_layers; i++) {
+        Matrix* W_temp = smat_mul(lr, layers[i]->dW);
+        Matrix* W = mat_sub(layers[i]->W, W_temp);
+
+        mat_free(W_temp);
+        mat_free(layers[i]->W);
+        layers[i]->W = W;
+
+
+        Matrix* b_temp = smat_mul(lr, layers[i]->db);
+        Matrix* b = mat_sub(layers[i]->b, b_temp);
+
+        mat_free(b_temp);
+        mat_free(layers[i]->b);
+        layers[i]->b = b;
+    }
+}
+
+// mlp funcs
+
+Matrix* mlp_forward()
