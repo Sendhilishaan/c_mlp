@@ -26,6 +26,17 @@ Linear* linear_create(size_t in_features, size_t out_features, Activation* activ
     return layer;
 }
 
+void linear_free(Linear* layer) {
+    mat_free(layer->W);
+    mat_free(layer->b);
+
+    if (layer->x != NULL) {mat_free(layer->x);}
+    if (layer->dW != NULL) {mat_free(layer->dW);}
+    if (layer->db != NULL) {mat_free(layer->db);}
+
+    free(layer);
+}
+
 Matrix* linear_forward(Linear* layer, Matrix* x) {
     if (layer->x != NULL) {
         mat_free(layer->x);
@@ -110,6 +121,16 @@ Mlp* mlp_create(Linear** layers, size_t n_layers) {
     return mlp;
 }
 
+void mlp_free(Mlp* mlp) {
+    for (size_t i = 0; i < mlp->n_layers; i++) {
+        linear_free(mlp->layers[i]);
+        if (mlp->pre_activations[i] != NULL){mat_free(mlp->pre_activations[i]);}
+    }
+    free(mlp->layers);
+    free(mlp->pre_activations);
+    free(mlp);
+}
+
 Matrix* mlp_forward(Mlp* mlp, Matrix* x) {
     // reset pre activations before pass
     if (mlp->pre_activations[0] != NULL) { // use calloc so correct
@@ -158,4 +179,24 @@ Matrix* mlp_backward(Mlp* mlp, Matrix* grad) {
     }
 
     return grad_cur;
+}
+
+void mlp_fit(Mlp* mlp, Matrix* X, Matrix* y, long epochs, double lr) {
+    for (long i = 0; i < epochs; i++) {
+        Matrix* y_pred = mlp_forward(mlp, X);
+        double loss = mse(y_pred, y);
+
+        if (i % 100 == 0) {
+            printf("epoch %ld loss: %f", i, loss);
+        }
+
+        Matrix* grad = dmse(y_pred, y);
+        Matrix* backward = mlp_backward(mlp, grad);
+
+        sgd_step(mlp->layers,mlp->n_layers, lr);
+
+        mat_free(y_pred);
+        mat_free(grad);
+        mat_free(backward);
+    }
 }

@@ -31,13 +31,13 @@ typedef struct {
     size_t n_layers;
 } Mlp;
 
-Mlp* mlp_create(Linear** layers, int n_layers);
+Mlp* mlp_create(Linear** layers, size_t n_layers);
 
 Matrix* mlp_forward(Mlp* mlp, Matrix* x);
 
 Matrix* mlp_backward(Mlp* mlp, Matrix* grad);
 
-void mlp_fit(Mlp* mlp, Matrix* X, Matrix* y, int epochs, double lr);
+void mlp_fit(Mlp* mlp, Matrix* X, Matrix* y, long epochs, double lr);
 
 void linear_free(Linear* layer);
 
