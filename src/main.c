@@ -17,9 +17,9 @@ int main() {
         y->data[i] = sin(X->data[i]);
     }
 
-    Linear* l1 = linear_create(1, 32, &RELU);
-    Linear* l2 = linear_create(32, 32, &RELU);
-    Linear* l3 = linear_create(32, 32, &RELU);
+    Linear* l1 = linear_create(1, 32, &TANH);
+    Linear* l2 = linear_create(32, 32, &TANH);
+    Linear* l3 = linear_create(32, 32, &TANH);
     Linear* l4 = linear_create(32, 1, NULL);
 
     Linear* layers[] = {l1, l2, l3, l4};
