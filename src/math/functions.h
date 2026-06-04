@@ -13,6 +13,11 @@ typedef struct {
 
 extern Activation SIGMOID;
 extern Activation RELU;
+extern Activation TANH;
+
+Matrix* tanh_a(Matrix* A);
+
+Matrix* dtanh_a(Matrix* A, Matrix* grad_out);
 
 Matrix* sigmoid(Matrix* A);
 

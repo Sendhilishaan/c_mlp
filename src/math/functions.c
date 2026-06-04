@@ -4,6 +4,34 @@
 
 Activation SIGMOID = {.backward = dsigmoid, .forward = sigmoid};
 Activation RELU = {.backward = drelu, .forward = relu};
+Activation TANH = {.backward = dtanh_a, .forward = tanh_a};
+
+Matrix* tanh_a(Matrix* A) {
+    Matrix* result = mat_create(A->rows, A->cols);
+
+    for (size_t i = 0; i < A->rows; i++) {
+        for (size_t j = 0; j < A->cols; j++) {
+            AT(result, i, j) = tanh(AT(A, i, j));
+        }
+    }
+
+    return result;
+}
+
+Matrix* dtanh_a(Matrix* A, Matrix* grad_out)  {
+    Matrix* temp = mat_create(A->rows, A->cols);
+
+    for (size_t i = 0; i < A->rows; i++) {
+        for (size_t j = 0; j < A->cols; j++) {
+            double tanh_temp = tanh(AT(A, i, j));
+            AT(temp, i, j) = (double) 1 - (tanh_temp * tanh_temp);
+        }
+    }
+    
+    Matrix* result = mat_hadamard(temp, grad_out);
+    mat_free(temp);
+    return result;
+}
 
 Matrix* sigmoid(Matrix* A) {
     Matrix* result = mat_create(A->rows, A->cols);
