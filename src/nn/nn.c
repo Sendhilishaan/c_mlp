@@ -1,5 +1,6 @@
 #include "nn.h"
 #include <stdlib.h>
+#include <stdio.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
 
@@ -46,8 +47,9 @@ Matrix* linear_forward(Linear* layer, Matrix* x) {
     Matrix* temp = mat_mul(x, layer->W);
     Matrix* z = mat_add_broadcast(temp, layer->b);
 
-    // cache
-    layer->x = x;
+    // cache (copy so layer owns it)
+    layer->x = mat_create(x->rows, x->cols);
+    for (size_t i = 0; i < x->rows * x->cols; i++) { layer->x->data[i] = x->data[i]; }
 
     mat_free(temp);
     return z;
@@ -126,7 +128,6 @@ void mlp_free(Mlp* mlp) {
         linear_free(mlp->layers[i]);
         if (mlp->pre_activations[i] != NULL){mat_free(mlp->pre_activations[i]);}
     }
-    free(mlp->layers);
     free(mlp->pre_activations);
     free(mlp);
 }
@@ -145,10 +146,6 @@ Matrix* mlp_forward(Mlp* mlp, Matrix* x) {
 
         mlp->pre_activations[i] = z;
 
-        if (x_curr != x) {
-            mat_free(x_curr);
-        }
-
         if (mlp->layers[i]->activation != NULL) {
             x_curr = mlp->layers[i]->activation->forward(z);
         }
@@ -164,18 +161,17 @@ Matrix* mlp_backward(Mlp* mlp, Matrix* grad) {
     Matrix* grad_cur = grad;
 
     for (int i = mlp->n_layers - 1; i >= 0; i--) {
-        
-        if (grad_cur != grad) {mat_free(grad_cur);}
+        Matrix* prev = grad_cur;
 
         if (mlp->layers[i]->activation != NULL) {
             Matrix* z = mlp->layers[i]->activation->backward(mlp->pre_activations[i], grad_cur);
             grad_cur = linear_backward(mlp->layers[i], z);
             mat_free(z);
-        }
-
-        else {
+        } else {
             grad_cur = linear_backward(mlp->layers[i], grad_cur);
         }
+
+        if (prev != grad) { mat_free(prev); }
     }
 
     return grad_cur;
@@ -187,7 +183,7 @@ void mlp_fit(Mlp* mlp, Matrix* X, Matrix* y, long epochs, double lr) {
         double loss = mse(y_pred, y);
 
         if (i % 100 == 0) {
-            printf("epoch %ld loss: %f", i, loss);
+            printf("epoch %ld loss: %f\n", i, loss);
         }
 
         Matrix* grad = dmse(y_pred, y);
@@ -195,7 +191,7 @@ void mlp_fit(Mlp* mlp, Matrix* X, Matrix* y, long epochs, double lr) {
 
         sgd_step(mlp->layers,mlp->n_layers, lr);
 
-        mat_free(y_pred);
+        if (y_pred != mlp->pre_activations[mlp->n_layers - 1]) { mat_free(y_pred); }
         mat_free(grad);
         mat_free(backward);
     }
