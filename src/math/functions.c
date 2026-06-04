@@ -1,5 +1,10 @@
 #include "functions.h"
 
+// activation structs 
+
+Activation SIGMOID = {.backward = dsigmoid, .forward = sigmoid};
+Activation RELU = {.backward = drelu, .forward = relu};
+
 Matrix* sigmoid(Matrix* A) {
     Matrix* result = mat_create(A->rows, A->cols);
 

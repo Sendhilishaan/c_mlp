@@ -6,6 +6,14 @@
 
 // activations
 
+typedef struct {
+    Matrix* (*forward)(Matrix*);
+    Matrix* (*backward)(Matrix*, Matrix*);
+} Activation;
+
+extern Activation SIGMOID;
+extern Activation RELU;
+
 Matrix* sigmoid(Matrix* A);
 
 Matrix* dsigmoid(Matrix* A, Matrix* grad_out);
@@ -13,11 +21,6 @@ Matrix* dsigmoid(Matrix* A, Matrix* grad_out);
 Matrix* relu(Matrix* A);
 
 Matrix* drelu(Matrix* A, Matrix* grad_out);
-
-typedef struct {
-    Matrix* (*forward)(Matrix*);
-    Matrix* (*backward)(Matrix*, Matrix*);
-} Activation;
 
 // loss
 
