@@ -1,3 +1,3 @@
-### cgrad
+### c_mlp
 
-neural network library written in C with Python bindings.
+Multilayer perceptron written completely in C with a Python API.
